@@ -177,7 +177,7 @@ dishRouter.route('/:dishId/comments/:commentId')
     .then((dish) => {
         if(dish != null && dish.comments.id(req.params.commentId) != null) {
             if(!dish.comments.id(req.params.commentId).author._id.equals(req.user._id)){
-                let err = new Error('You are not authorized!');
+                err = new Error('You are not authorized!');
                 err.status = 403;
                 return next(err);
             }
@@ -213,6 +213,11 @@ dishRouter.route('/:dishId/comments/:commentId')
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if(dish != null && dish.comments.id(req.params.commentId) != null) {
+            if(!dish.comments.id(req.params.commentId).author._id.equals(req.user._id)){
+                err = new Error('You are not authorized!');
+                err.status = 403;
+                return next(err);
+            }
             dish.comments.id(req.params.commentId).remove();
             dish.save()
             .then((dish) => {
