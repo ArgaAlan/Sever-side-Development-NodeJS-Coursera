@@ -23,7 +23,7 @@ opts.secretOrKey = config.secretKey;
 exports.jwtPassport = passport.use(new JwtStrategy(opts, 
     (jwt_payload, done) => {
         console.log("JWT payload: ", jwt_payload);
-        User.findOne({id: jwt_payload.sub}, (err, user) =>{
+        User.findOne({_id: jwt_payload._id}, (err, user) => {
             if(err){
                 return done(err, false); //Done = function passed from passport
             } else if(user){
@@ -36,3 +36,13 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 ));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
+exports.verifyAdmin = (req, res, next) => {
+        if(!req.user.admin){
+            let err = new Error('You are not authorized!');
+            err.status = 403;
+            return next(err);
+        } else {
+            next();
+        }
+};
